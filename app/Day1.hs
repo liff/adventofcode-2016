@@ -7,31 +7,31 @@ import           Text.Megaparsec.Lexer
 import           Text.Megaparsec.String
 
 data Turn
-    = L
-    | R
-    deriving (Eq,Show)
+  = L
+  | R
+  deriving (Eq, Show)
 
 data Step =
-    Step Turn
-         Int
-    deriving (Eq,Show)
+  Step Turn
+       Int
+  deriving (Eq, Show)
 
 data Orientation
-    = N
-    | E
-    | S
-    | W
-    deriving (Eq,Show)
+  = N
+  | E
+  | S
+  | W
+  deriving (Eq, Show)
 
 type Pos = (Int, Int)
 
 data Placement =
-    Placement Orientation
-              Pos
-    deriving (Eq,Show)
+  Placement Orientation
+            Pos
+  deriving (Eq, Show)
 
 distance :: Pos -> Pos -> Int
-distance (p1,p2) (q1,q2) = abs (p1 - q1) + abs (p2 - q2)
+distance (p1, p2) (q1, q2) = abs (p1 - q1) + abs (p2 - q2)
 
 stepsP :: Parser [Step]
 stepsP = stepP `sepBy1` string ", "
@@ -52,21 +52,21 @@ turn L S = E
 turn L E = N
 
 move :: Orientation -> Int -> Pos -> Pos
-move N n (x,y) = (x, y - n)
-move E n (x,y) = (x + n, y)
-move S n (x,y) = (x, y + n)
-move W n (x,y) = (x - n, y)
+move N n (x, y) = (x, y - n)
+move E n (x, y) = (x + n, y)
+move S n (x, y) = (x, y + n)
+move W n (x, y) = (x - n, y)
 
 step :: Placement -> Step -> Placement
 step (Placement o pos) (Step t n) =
-    let o' = turn t o
-        pos' = move o' n pos
-    in Placement o' pos'
+  let o' = turn t o
+      pos' = move o' n pos
+  in Placement o' pos'
 
 main :: IO ()
 main = do
-    let input = "input/day1.txt"
-    Right steps <- parse stepsP input <$> readFile input
-    let start@(Placement _ startPos) = Placement N (0, 0)
-        (Placement _ endPos) = foldl step start steps
-    putStrLn $ show $ distance startPos endPos
+  let input = "input/day1.txt"
+  Right steps <- parse stepsP input <$> readFile input
+  let start@(Placement _ startPos) = Placement N (0, 0)
+      (Placement _ endPos) = foldl step start steps
+  print $ distance startPos endPos

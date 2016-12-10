@@ -10,10 +10,10 @@ trianglesP = triangleP `endBy` newline
     triangleP = (,,) <$> side <*> side <*> side
     side = space *> (fromIntegral <$> integer)
 
-isPossible (s1,s2,s3) = (s1 + s2) > s3 && (s1 + s3) > s2 && (s2 + s3) > s1
+isPossible (s1, s2, s3) = (s1 + s2) > s3 && (s1 + s3) > s2 && (s2 + s3) > s1
 
 main :: IO ()
 main = do
-    let input = "input/day3.txt"
-    Right triangles <- parse trianglesP input <$> readFile input
-    print $ length $ filter isPossible triangles
+  let input = "input/day3.txt"
+  Right triangles <- parse trianglesP input <$> readFile input
+  print $ length $ filter isPossible triangles
