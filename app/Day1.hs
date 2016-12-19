@@ -1,8 +1,9 @@
 module Day1 where
 
 import           Control.Applicative
+import           Data.Maybe             (fromMaybe)
 import           System.IO              (readFile)
-import           Text.Megaparsec        hiding (Pos)
+import           Text.Megaparsec        hiding (Pos, between)
 import           Text.Megaparsec.Lexer
 import           Text.Megaparsec.String
 
@@ -63,10 +64,59 @@ step (Placement o pos) (Step t n) =
       pos' = move o' n pos
   in Placement o' pos'
 
-main :: IO ()
-main = do
-  let input = "input/day1.txt"
-  Right steps <- parse stepsP input <$> readFile input
+between :: Pos -> Pos -> [Pos]
+between (sx, sy) (ex, ey)
+  | sx == ex =
+    [ (sx, y)
+    | y <-
+       if sy < ey
+         then [sy .. ey - 1]
+         else reverse [ey + 1 .. sy] ]
+  | sy == ey =
+    [ (x, sy)
+    | x <-
+       if sx < ex
+         then [sx .. ex - 1]
+         else reverse [ex + 1 .. sx] ]
+  | otherwise = []
+
+stepAll :: Placement -> Step -> [Placement]
+stepAll (Placement o pos) (Step t n) =
+  let o' = turn t o
+      allPos =
+        [ move o' i pos
+        | i <- [1 .. n] ]
+  in Placement o' <$> allPos
+
+part1 :: [Step] -> Int
+part1 steps =
   let start@(Placement _ startPos) = Placement N (0, 0)
       (Placement _ endPos) = foldl step start steps
-  print $ distance startPos endPos
+  in distance startPos endPos
+
+firstDuplicate
+  :: Eq a
+  => [a] -> Maybe a
+firstDuplicate [] = Nothing
+firstDuplicate (a:as)
+  | a `elem` as = Just a
+  | otherwise = firstDuplicate as
+
+part2 :: [Step] -> Int
+part2 steps =
+  let start@(Placement _ startPos) = Placement N (0, 0)
+      interpolated []         = []
+      interpolated (a:b:rest) = between a b ++ interpolated (b : rest)
+      interpolated [a]        = [a]
+      positions =
+        interpolated $ (\(Placement _ pos) -> pos) <$> scanl step start steps
+      endPos = fromMaybe startPos (firstDuplicate positions)
+  in distance startPos endPos
+
+main :: IO ()
+main = do
+  let inputFile = "input/day1.txt"
+  input <- readFile inputFile
+  let (Right steps) = parse stepsP inputFile input
+  print $ part1 steps
+  print $ part2 steps
