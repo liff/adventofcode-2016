@@ -1,6 +1,5 @@
 module Day9 where
 
-import           Debug.Trace            (trace)
 import           Text.Megaparsec
 import           Text.Megaparsec.Lexer  hiding (space)
 import           Text.Megaparsec.String

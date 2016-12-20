@@ -14,6 +14,7 @@ import qualified Day6
 import qualified Day7
 import qualified Day8
 import qualified Day9
+import qualified Day10
 
 main :: IO ()
 main = do
@@ -28,5 +29,6 @@ main = do
       ["day7"] -> Day7.main
       ["day8"] -> Day8.main
       ["day9"] -> Day9.main
+      ["day10"] -> Day10.main
       args -> hPutStrLn stderr $ "Unimplemented " ++ show args
   return ()
