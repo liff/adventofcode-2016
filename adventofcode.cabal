@@ -23,6 +23,7 @@ executable adventofcode
                      , containers
                      , megaparsec
                      , cryptohash
+                     , repa
   default-language:    Haskell2010
   other-modules:       Day1
                      , Day2
@@ -31,6 +32,7 @@ executable adventofcode
                      , Day5
                      , Day6
                      , Day7
+                     , Day8
 
 source-repository head
   type:     git
