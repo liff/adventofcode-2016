@@ -50,26 +50,22 @@ sources bot = do
     Just [s1, s2] -> return (s1, s2)
     _             -> error "Need two sources"
 
+memoize :: (Receive -> Ctx Int) -> Receive -> Ctx Int
+memoize f r = do memo <- get
+                 case Map.lookup r memo of
+                   Just known -> return known
+                   Nothing -> do
+                     res <- f r
+                     modify $ Map.insert r res
+                     return res
+
 follow :: Receive -> Ctx Int
-follow r@(Lo x) = do
-  memo <- get
-  case Map.lookup r memo of
-    Just known -> return known
-    Nothing -> do
-      (r1, r2) <- sources x
-      res <- min <$> follow r1 <*> follow r2
-      modify $ Map.insert r res
-      return res
-follow r@(Hi x) = do
-  memo <- get
-  case Map.lookup r memo of
-    Just known -> return known
-    Nothing -> do
-      (r1, r2) <- sources x
-      res <- max <$> follow r1 <*> follow r2
-      modify $ Map.insert r res
-      return res
-follow (Const c) = return c
+follow = memoize follow'
+  where follow' (Lo x) = do (r1, r2) <- sources x
+                            min <$> follow r1 <*> follow r2
+        follow' (Hi x) = do (r1, r2) <- sources x
+                            max <$> follow r1 <*> follow r2
+        follow' (Const c) = return c
 
 chipsHeldBy :: Int -> Ctx (Int, Int)
 chipsHeldBy bot = do
