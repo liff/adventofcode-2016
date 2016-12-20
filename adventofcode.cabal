@@ -33,6 +33,7 @@ executable adventofcode
                      , Day6
                      , Day7
                      , Day8
+                     , Day9
 
 source-repository head
   type:     git
